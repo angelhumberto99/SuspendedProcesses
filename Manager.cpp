@@ -105,6 +105,40 @@ void Manager::selectState(char character) {
             // levanta la bandera de pausa
             pause = true;
             break;
+        case 's': // suspender
+            if (!pause) {
+                if (!blockedProcesses.empty()){
+                    suspendedProcess = blockedProcesses[0];
+                    updateFrames(suspendedProcess, REMOVE);
+                    pop_front(blockedProcesses);
+                    suspended++;
+                    suspendProcess();
+                }
+            }
+            break;
+        case 'r': // regresar
+            if (!pause) {
+                if (suspended != 0){
+                    if (canFit(suspendedProcess)){
+                        suspendedProcess.setState(2);
+                        blockedProcesses.push_back(suspendedProcess);
+                        updateFrames(suspendedProcess);
+                        suspended--;
+                    }
+                }
+            } 
+            break;
+    }
+}
+
+void Manager::suspendProcess() {
+    std::fstream file;
+    file.open("suspendidos.txt", std::ios::app);
+    if (!file.is_open())
+        std::cerr << "Error al abrir el archivo de texto" << std::endl;
+    else {
+        file << suspendedProcess;
+        file.close();
     }
 }
 
@@ -163,7 +197,7 @@ void Manager::printData() {
             }
         }
         SLEEP(DELAY);
-    }while(doneProcesses.size() != totalProcess);
+    }while(doneProcesses.size() != totalProcess || suspended != 0);
         CLEAR;
         std::cin.ignore();
         printQueued();
@@ -220,8 +254,17 @@ void Manager::printQueued() {
     std::cout << "Quantum: " << quantumLength;
     if (!newProcesses.empty()){
         GOTO_XY(QUEUED_X_POS-10, 2);
-        std::cout << "ID: " << newProcesses[0].getId() 
-        << " | Peso: " << newProcesses[0].getWeight();
+        std::cout << "Nuevo (ID: " << newProcesses[0].getId() 
+        << " | Peso: " << newProcesses[0].getWeight() << ")";
+    }
+
+    GOTO_XY(FINISHED_X_POS-22, 2);
+    std::cout << "Suspendidos: " << suspended;
+
+    if (suspended != 0){
+        GOTO_XY(FINISHED_X_POS+2, 2);
+        std::cout << "Suspendido (ID: " << suspendedProcess.getId() 
+        << " | Peso: " << suspendedProcess.getWeight() << ")";
     }
 
     // mostramos los procesos en la cola de LISTOS

@@ -101,6 +101,27 @@ class Process{
             this->state = other.state;
             return *this;
         }
+
+        friend std::ostream &operator <<(std::ostream &os, const Process &obj){
+            os << obj.getOperation() << "|"
+               << obj.getEMT() << "|"
+               << obj.getId() << "|"
+               << obj.getTT() << "|"
+               << obj.getTR() << "|"
+               << obj.getTTB() << "|"
+               << obj.getTLL() << "|"
+               << obj.getTF() << "|"
+               << obj.getTRet() << "|"
+               << obj.getTRes() << "|"
+               << obj.getTE() << "|"
+               << obj.getReady() << "|"
+               << obj.getResponse() << "|"
+               << obj.getQuantum() << "|"
+               << obj.getWeight() << "|"
+               << obj.getState() << std::endl;
+            return os;
+        }
+
 };
 
 #endif //PROCESS_H

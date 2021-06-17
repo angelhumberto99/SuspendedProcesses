@@ -8,6 +8,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "Frame.h"
+#include <fstream>
 
 enum State{
     IS_FREE,
@@ -33,6 +34,8 @@ class Manager {
         std::vector<Process> blockedProcesses;
         // procesos en el estado de FINALIZADOS
         std::vector<Process> doneProcesses;
+        // proceso suspendido
+        Process suspendedProcess;
     
         Frame frames[(MAX_MEM_SIZE/4)];
 
@@ -44,6 +47,7 @@ class Manager {
         int uniqueKey;
         int quantumLength;
         int currentMemSize;
+        int suspended;
 
         bool validateId(int auxInt, std::vector<int> &ids);
         bool isOperationValid(Process &auxProcess);
@@ -61,10 +65,12 @@ class Manager {
         void printPageTable();
         bool canFit(Process &proc);
         void updateFrames(Process &proc, int band = IS_FREE);
+        void suspendProcess();
     public:
         Manager() { 
             quantumLength = 0;
             totalProcess = 0;
+            suspended = 0;
             pause = false;
             showBCP = false;
             state = ' ';
