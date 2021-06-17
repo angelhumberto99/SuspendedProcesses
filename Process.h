@@ -122,6 +122,60 @@ class Process{
             return os;
         }
 
+        friend std::istream &operator >>(std::istream &is, Process &obj){
+            std::string auxString;
+            getline(is, auxString, '|');
+            obj.setOperation(auxString);
+
+            getline(is, auxString, '|');
+            obj.setEMT((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|');
+            obj.setId((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|'); 
+            obj.setTT((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|'); 
+            obj.setTR((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|'); 
+            obj.setTTB((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|');
+            obj.setTLL((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|');
+            obj.setTF((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|'); 
+            obj.setTRet((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|'); 
+            obj.setTRes((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|');
+            obj.setTE((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|');
+            obj.setReady((auxString == "1"? true: false));
+
+            getline(is, auxString, '|');
+            obj.setResponse((auxString == "1"? true: false));
+
+            getline(is, auxString, '|');
+            obj.setQuantum((short)atoi(auxString.c_str()));
+
+            getline(is, auxString, '|');
+            obj.setWeight((short)atoi(auxString.c_str()));
+
+            getline(is, auxString);
+            obj.setState((short)atoi(auxString.c_str()));
+
+
+            return is;
+        }
+
 };
 
 #endif //PROCESS_H

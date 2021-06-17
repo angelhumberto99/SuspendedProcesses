@@ -113,17 +113,28 @@ void Manager::selectState(char character) {
                     pop_front(blockedProcesses);
                     suspended++;
                     suspendProcess();
+                    getfirstSuspended();
+                    if (!newProcesses.empty()) {
+                        if (canFit(newProcesses[0])){
+                            updateFrames(newProcesses[0]);
+                            readyProcesses.push_back(newProcesses[0]);
+                            pop_front(newProcesses);
+                        }
+                    }
                 }
             }
             break;
         case 'r': // regresar
             if (!pause) {
-                if (suspended != 0){
+                if (suspended != 0 && blockedProcesses[0].getId() != 0){
                     if (canFit(suspendedProcess)){
+                        getfirstSuspended();
                         suspendedProcess.setState(2);
                         blockedProcesses.push_back(suspendedProcess);
                         updateFrames(suspendedProcess);
                         suspended--;
+                        retrieveProcess();
+                        getfirstSuspended();
                     }
                 }
             } 
@@ -142,6 +153,37 @@ void Manager::suspendProcess() {
     }
 }
 
+void Manager::getfirstSuspended() {
+    std::fstream file;
+    file.open("suspendidos.txt");
+    if (!file.is_open())
+        std::cerr << "Error al abrir el archivo de texto" << std::endl;
+    else {
+        file >> suspendedProcess;
+        file.close();
+    }
+}
+
+void Manager::retrieveProcess() {
+    std::fstream file;
+    std::string line;
+    std::string text = "";
+    file.open("suspendidos.txt", std::ios::in);
+    if (!file.is_open())
+        std::cerr << "Error al abrir el archivo de texto" << std::endl;
+    else {
+        file >> suspendedProcess;
+        while (!file.eof()){
+            file >> line;
+            text += (line + '\n');
+            line = "";
+        }
+        file.close();
+        file.open("suspendidos.txt", std::ios::out);
+        file << text;
+        file.close();
+    }
+}
 // actualiza el tiempo restante de todos los procesos bloqueados
 void Manager::updateBlocked() {
     bool band = false;
@@ -557,11 +599,11 @@ void Manager::printBCP() {
 
     // mostramos el bcp del proceso en ejecución (si aplica)
     colPos = 4;
+    GOTO_XY(FINISHED_X_POS-6, colPos++);
+    std::cout << "En ejecucion";
+    GOTO_XY(FINISHED_X_POS-6, colPos++);
+    std::cout << ".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-";
     if(workingProcess.getId() != 0) {
-        GOTO_XY(FINISHED_X_POS-6, colPos++);
-        std::cout << "En ejecucion";
-        GOTO_XY(FINISHED_X_POS-6, colPos++);
-        std::cout << ".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-";
         GOTO_XY(FINISHED_X_POS-6, colPos++);
         std::cout << "ID: " << workingProcess.getId();
         GOTO_XY(FINISHED_X_POS-6, colPos++);

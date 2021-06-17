@@ -66,6 +66,8 @@ class Manager {
         bool canFit(Process &proc);
         void updateFrames(Process &proc, int band = IS_FREE);
         void suspendProcess();
+        void retrieveProcess();
+        void getfirstSuspended();
     public:
         Manager() { 
             quantumLength = 0;
@@ -85,6 +87,10 @@ class Manager {
                 else
                     frames[i] = Frame("OS", 4, "Reservado");
             }
+            // vacia el archivo de texto
+            std::fstream file;
+            file.open("suspendidos.txt", std::ios::out);
+            file.close();
         }
         ~Manager() {}
         void printData();
